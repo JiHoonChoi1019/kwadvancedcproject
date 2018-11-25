@@ -3,6 +3,7 @@
 #include "legd_list.h"
 
 int main() {
+	legd_list *head = NULL;
 	int selec = 0;
 	while (1) {
 		puts("Input income = 1");
@@ -12,14 +13,13 @@ int main() {
 		puts("Show spending = 5");
 		puts("read from SMS = 6");
 		puts("Exit = 7");
+		printf("\nInput command = ");
 		scanf("%d", &selec);
-
-		legd_list *head;
-		legd_list *cursor = head;
+		puts("---------------------------");
 
 		switch(selec) {
 		case 1:
-			push_legd(cursor);
+			push_legd(&head);
 			break;
 		case 2:
 			show(head);
@@ -29,8 +29,10 @@ int main() {
 		case 5:
 		case 6:
 		case 7:
+			free_ledg(head);
 			exit(0);
 		}
+		puts("---------------------------");
 	}
 	return 0;
 }
