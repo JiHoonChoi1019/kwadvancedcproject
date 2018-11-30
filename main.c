@@ -1,21 +1,14 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include "legd_list.h"
+#include "basic_func.h"
 
 int main() {
 	legd_list *head = NULL;
 	int selec = 0;
 	while (1) {
-		puts("Input income = 1");
-		puts("Input spending = 2");
-		puts("Show stastics = 3");
-		puts("Show incomes = 4");
-		puts("Show spending = 5");
-		puts("read from SMS = 6");
-		puts("Exit = 7");
-		printf("\nInput command = ");
-		scanf("%d", &selec);
-		puts("---------------------------");
+		selec = showFunc();
 
 		switch(selec) {
 		case 1:
@@ -32,7 +25,7 @@ int main() {
 			free_ledg(head);
 			exit(0);
 		}
-		puts("---------------------------");
+		system("cls");
 	}
 	return 0;
 }
