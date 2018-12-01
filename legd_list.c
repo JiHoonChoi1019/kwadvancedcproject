@@ -8,8 +8,6 @@
 #include <unistd.h>
 #include "legd_list.h"
 
-#define LEGD_SIZE (sizeof(legd_list) - sizeof(legd_list*))
-
 void push_legd(legd_list **head) {
 	system("clear");
 	legd_list *newlegd = (legd_list *)malloc(sizeof(legd_list));
@@ -40,13 +38,52 @@ void push_legd(legd_list **head) {
 			do {
 				show(*head);
 			} while (rectify(*head) == 1);
-			list2file(*head);
+			list2file(*head, 1);
 			break;
 		}
 		else
 			printf("Please input Y or N.\n");
 	}
-	list2file(*head);
+	free_legd(*head);
+	return;
+}
+void income_legd(legd_list **head) {
+	system("clear");
+	legd_list *newlegd = (legd_list *)malloc(sizeof(legd_list));
+	printf("How much = ");
+	scanf("%d", &newlegd->money);
+	printf("Date (ex. 181116) = ");
+	scanf("%s", newlegd->date);
+	printf("Source = ");
+	scanf("%s", newlegd->store);
+	printf("Categorize (Pay = 1 / Finance = 2 / Others = 3) = ");
+	scanf("%d", &newlegd->category);
+	newlegd->isalive = 1;
+
+	newlegd->node = *head;
+	*head = newlegd;
+
+	char more;
+	while (1) {
+		printf("More to Input? (Y, N) : ");
+		while (getchar() == '\0');			//clear buffer
+		more = getchar();
+
+		if (more == 'y' || more == 'Y') {
+			income_legd(head);
+			break;
+		}
+		else if (more == 'n' || more == 'N') {
+			do {
+				show(*head);
+			} while (rectify(*head) == 1);
+			list2file(*head, 0);
+			break;
+		}
+		else
+			printf("Please input Y or N.\n");
+	}
+	free_legd(*head);
 	return;
 }
 void show(legd_list *cursor) {
@@ -72,7 +109,7 @@ void show(legd_list *cursor) {
 	}
 	return;
 }
-void free_ledg(legd_list *head) {
+void free_legd(legd_list *head) {
 	legd_list *cursor;
 	while (head != NULL) {
 		cursor = head->node;
@@ -99,32 +136,36 @@ int rectify(legd_list *head) {
 	scanf("%d", &head->money);
 	printf("Date (ex. 181116) = ");
 	scanf("%s", head->date);
-	printf("Where = ");
+	printf("Where / Source = ");
 	scanf("%s", head->store);
-	printf("Categorize (Food = 1 / Transport = 2 / Pleasure = 3) = ");
+	printf("Categorize (Food or Pay = 1 / Transport or Finance = 2 / Pleasure or Others = 3) = ");
 	scanf("%d", &head->category);
 
 	return 1;
 }
 
-void list2file(legd_list * head) {
-	if (mkdir("./legd_data/income", 0755) == -1) {
-		perror("mkdir() error!");
-		exit(-1);
-	}
+void list2file(legd_list * head, int i) {
+	mkdir("./legd_data", 0755);
+	mkdir("./legd_data/income", 0755);
+	mkdir("./legd_data/expense", 0755);
 	printf("-----------------\n");
-	sleep(3);
 
 	while (head != NULL) {
 		char date[6] = { 0, };
-		strncpy(date, head->date, 5);
-		char cdate[35] = "./legd_data/income/";
+		strncpy(date, head->date, 4);
+
+		char cdate[40] = "./legd_data/";
+		if (i == 0)
+			strcat(cdate, "income/");
+		else
+			strcat(cdate, "expense/");
 		strcat(cdate, date);
 		mkdir(cdate, 0755);
 
+		strcat(cdate, "/");
 		strcat(cdate, head->date);
 
-		int fd = open(cdate, O_RDWR | O_CREAT);
+		int fd = open(cdate, O_RDWR | O_CREAT | O_APPEND, 0644);
 		legd_list *buf = (legd_list *)malloc(LEGD_SIZE);
 		memset(buf, '\0', LEGD_SIZE);
 
@@ -132,14 +173,12 @@ void list2file(legd_list * head) {
 			if (read(fd, (legd_list *)buf, LEGD_SIZE) == 0) {
 				memcpy(buf, head, LEGD_SIZE);
 				write(fd, (legd_list *)buf, LEGD_SIZE);
-				free(buf);
 				break;
 			}
 			else if (buf->isalive == 0) {
 				lseek(fd, SEEK_CUR, -(LEGD_SIZE));
 				memcpy(buf, head, LEGD_SIZE);
 				write(fd, (legd_list *)buf, LEGD_SIZE);
-				free(buf);
 				break;
 			}
 		}

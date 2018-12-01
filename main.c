@@ -12,17 +12,16 @@ int main() {
 
 		switch(selec) {
 		case 1:
-			push_legd(&head);
+			income_legd(&head);
 			break;
 		case 2:
-			show(head);
+			push_legd(&head);
 			break;
 		case 3:
 		case 4:
 		case 5:
 		case 6:
 		case 7:
-			free_ledg(head);
 			exit(0);
 		}
 		system("clear");
