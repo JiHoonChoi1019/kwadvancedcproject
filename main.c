@@ -25,7 +25,7 @@ int main() {
 			free_ledg(head);
 			exit(0);
 		}
-		system("cls");
+		system("clear");
 	}
 	return 0;
 }

@@ -2,8 +2,9 @@
 #define __legd_list_h__
 
 typedef struct __legd_list {
+	char isalive;
 	int money;
-	int date;
+	char date[7];
 	char store[20];
 	int category;
 	struct __legd_list * node;
